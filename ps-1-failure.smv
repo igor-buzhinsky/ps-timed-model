@@ -1,0 +1,819 @@
+@TIME_DOMAIN continuous
+
+MODULE PS_APU(HLEG_P, HLEG_P_FAULT, HLEG_P_CONNECTED, HLEG_T, HLEG_T_FAULT, HLEG_T_CONNECTED, NEUTRON_FLUX, NEUTRON_FLUX_FAULT, NEUTRON_FLUX_CONNECTED, SHOULD_EXEC)
+VAR
+    HIGH_TRESH002 : HIGH_TRESH(NEUTRON_FLUX, NEUTRON_FLUX_FAULT, TRUE, 200000);
+    OR_2002 : STATEFUL_OR_2(HIGH_TRESH002.BO1, HIGH_TRESH002.BO1_FAULT, TRUE, HIGH_TRESH001.BO1, HIGH_TRESH001.BO1_FAULT, TRUE, SHOULD_EXEC);
+    ON_DELAY001 : ON_DELAY(LOW_TRESH002.BO1, LOW_TRESH002.BO1_FAULT, TRUE, 3, SHOULD_EXEC);
+    LOW_TRESH002 : LOW_TRESH(HLEG_T, HLEG_T_FAULT, TRUE, 150);
+    AND_2002 : AND_2(ON_DELAY001.BO1, ON_DELAY001.BO1_FAULT, TRUE, ON_DELAY002.BO1, ON_DELAY002.BO1_FAULT, TRUE);
+    ON_DELAY002 : ON_DELAY(LOW_TRESH001.BO1, LOW_TRESH001.BO1_FAULT, TRUE, 3, SHOULD_EXEC);
+    HIGH_TRESH001 : HIGH_TRESH(HLEG_P, HLEG_P_FAULT, TRUE, 70);
+    LOW_TRESH001 : LOW_TRESH(HLEG_P, HLEG_P_FAULT, TRUE, 20);
+DEFINE
+    HLEG_P_Max2_OR_NF_Max2:=OR_2002.BO1;
+    HLEG_P_Max2_OR_NF_Max2_FAULT:=OR_2002.BO1_FAULT;
+    HLEG_T_Min_AND_HLEG_P_Min:=AND_2002.BO1;
+    HLEG_T_Min_AND_HLEG_P_Min_FAULT:=AND_2002.BO1_FAULT;
+
+MODULE PS_ALU(HLEG_P_Max2_OR_NF_Max2_1, HLEG_P_Max2_OR_NF_Max2_1_FAULT, HLEG_P_Max2_OR_NF_Max2_1_CONNECTED, HLEG_P_Max2_OR_NF_Max2_2, HLEG_P_Max2_OR_NF_Max2_2_FAULT, HLEG_P_Max2_OR_NF_Max2_2_CONNECTED, HLEG_P_Max2_OR_NF_Max2_3, HLEG_P_Max2_OR_NF_Max2_3_FAULT, HLEG_P_Max2_OR_NF_Max2_3_CONNECTED, HLEG_P_Max2_OR_NF_Max2_4, HLEG_P_Max2_OR_NF_Max2_4_FAULT, HLEG_P_Max2_OR_NF_Max2_4_CONNECTED, HLEG_T_Min_AND_HLEG_P_Min_1, HLEG_T_Min_AND_HLEG_P_Min_1_FAULT, HLEG_T_Min_AND_HLEG_P_Min_1_CONNECTED, HLEG_T_Min_AND_HLEG_P_Min_2, HLEG_T_Min_AND_HLEG_P_Min_2_FAULT, HLEG_T_Min_AND_HLEG_P_Min_2_CONNECTED, HLEG_T_Min_AND_HLEG_P_Min_3, HLEG_T_Min_AND_HLEG_P_Min_3_FAULT, HLEG_T_Min_AND_HLEG_P_Min_3_CONNECTED, HLEG_T_Min_AND_HLEG_P_Min_4, HLEG_T_Min_AND_HLEG_P_Min_4_FAULT, HLEG_T_Min_AND_HLEG_P_Min_4_CONNECTED, MANUAL_RESET, MANUAL_RESET_FAULT, MANUAL_RESET_CONNECTED, SHOULD_EXEC)
+VAR
+    NFB001 : NFB(MANUAL_RESET, MANUAL_RESET_FAULT, TRUE, FALSE);
+    AND_2001 : AND_2(!_34002.BO1, _34002.BO1_FAULT, TRUE, _24002.BO1, _24002.BO1_FAULT, TRUE);
+    OR_2001 : OR_2(NFB001.BO1, NFB001.BO1_FAULT, TRUE, !AND_2001.BO1, AND_2001.BO1_FAULT, TRUE);
+    _24002 : _24(HLEG_P_Max2_OR_NF_Max2_1, HLEG_P_Max2_OR_NF_Max2_1_FAULT, TRUE, HLEG_P_Max2_OR_NF_Max2_2, HLEG_P_Max2_OR_NF_Max2_2_FAULT, TRUE, HLEG_P_Max2_OR_NF_Max2_3, HLEG_P_Max2_OR_NF_Max2_3_FAULT, TRUE, HLEG_P_Max2_OR_NF_Max2_4, HLEG_P_Max2_OR_NF_Max2_4_FAULT, TRUE);
+    NOT002 : NOT(MEM_S001.BO1, MEM_S001.BO1_FAULT, TRUE);
+    MEM_S001 : MEM_S(AND_2001.BO1, AND_2001.BO1_FAULT, TRUE, OR_2001.BO1, OR_2001.BO1_FAULT, TRUE, SHOULD_EXEC);
+    _34002 : _34(HLEG_T_Min_AND_HLEG_P_Min_1, HLEG_T_Min_AND_HLEG_P_Min_1_FAULT, TRUE, HLEG_T_Min_AND_HLEG_P_Min_2, HLEG_T_Min_AND_HLEG_P_Min_2_FAULT, TRUE, HLEG_T_Min_AND_HLEG_P_Min_3, HLEG_T_Min_AND_HLEG_P_Min_3_FAULT, TRUE, HLEG_T_Min_AND_HLEG_P_Min_4, HLEG_T_Min_AND_HLEG_P_Min_4_FAULT, TRUE);
+DEFINE
+    RODS_DOWN:=MEM_S001.BO1;
+    RODS_DOWN_FAULT:=MEM_S001.BO1_FAULT;
+    ENABLE_SAS:=NOT002.BO1;
+    ENABLE_SAS_FAULT:=NOT002.BO1_FAULT;
+
+--@ NOT
+--@
+--@ SEARCH / SAFIR2022
+--@
+--@ Author(s): Antti Pakonen
+--@ Version 16.5.2019
+--@
+--@
+--@ Source documents:
+--@ - [1] U.S. EPR FSAR - https:
+--@ - [2] https:
+MODULE NOT(BI1, BI1_FAULT, BI1_CONNECTED)
+DEFINE
+    BO1:= !BI1;
+    BO1_FAULT:= BI1_FAULT;
+
+--@ OR Function
+--@
+--@ SAUNA / SAFIR2018
+--@
+--@ Author(s): Antti Pakonen
+--@ Version 17.4.2018
+--@
+--@ Source documents:
+--@ - [1] U.S. EPR FSAR - https:
+--@ - [2] TELEPERM XS - A Digital Reactor Protection System - https:
+MODULE OR_2(BI1, BI1_FAULT, BI1_CONNECTED, BI2, BI2_FAULT, BI2_CONNECTED)
+DEFINE
+    BO1 := BI1 | BI2;
+    BO1_FAULT := BI1_FAULT | BI2_FAULT; --@ Passive status processing [2]
+
+MODULE STATEFUL_OR_2(BI1, BI1_FAULT, BI1_CONNECTED, BI2, BI2_FAULT, BI2_CONNECTED, SHOULD_EXEC)
+VAR
+    BO1: boolean;
+    BO1_FAULT: boolean;
+ASSIGN
+    init(BO1) := SHOULD_EXEC ? (BI1 | BI2) : FALSE;
+    init(BO1_FAULT) := SHOULD_EXEC ? (BI1_FAULT | BI2_FAULT) : FALSE;
+    next(BO1) := SHOULD_EXEC ? next(BI1 | BI2) : BO1;
+    next(BO1_FAULT) := SHOULD_EXEC ? next(BI1_FAULT | BI2_FAULT) : BO1_FAULT;
+
+--@ AND Function
+--@
+--@ SAUNA / SAFIR2018
+--@
+--@ Author(s): Antti Pakonen
+--@ Version 17.4.2018
+--@
+--@ Source documents:
+--@ - [1] U.S. EPR FSAR - https:
+--@ - [2] TELEPERM XS - A Digital Reactor Protection System - https:
+MODULE AND_2(BI1, BI1_FAULT, BI1_CONNECTED, BI2, BI2_FAULT, BI2_CONNECTED)
+DEFINE
+    BO1:=
+    case
+        !BI1_CONNECTED & !BI2_CONNECTED : FALSE;
+        TRUE : (!BI1_CONNECTED | BI1) & (!BI2_CONNECTED | BI2);
+    esac;
+    BO1_FAULT:= BI1_FAULT | BI2_FAULT; --@ Passive status processing [2]
+
+--@ High Treshold
+--@
+--@ SAUNA / SAFIR2018
+--@
+--@ Author(s): Antti Pakonen
+--@ Version 17.4.2018
+--@
+--@ Source documents:
+--@ - [1] U.S. EPR FSAR - https:
+--@ - [2] TELEPERM XS - A Digital Reactor Protection System - https:
+MODULE HIGH_TRESH(AI1, AI1_FAULT, AI1_CONNECTED, Max_)
+DEFINE
+    BO1:= (AI1 > Max_);
+    BO1_FAULT:= AI1_FAULT; --@ Passive status processing [2]
+
+--@ Low Treshold
+--@
+--@ SAUNA / SAFIR2018
+--@
+--@ Author(s): Antti Pakonen
+--@ Version 17.4.2018
+--@
+--@ Source documents:
+--@ - [1] U.S. EPR FSAR - https:
+--@ - [2] TELEPERM XS - A Digital Reactor Protection System - https:
+MODULE LOW_TRESH(AI1, AI1_FAULT, AI1_CONNECTED, Min_)
+DEFINE
+    BO1:= (AI1 < Min_);
+    BO1_FAULT:= AI1_FAULT; --@ Passive status processing [2]
+
+--@ AUX: Default value substitution
+--@
+--@ SAUNA / SAFIR2018
+--@
+--@ Author(s): Antti Pakonen
+--@ Version 14.4.2020
+--@
+--@ Auxiliary component: remove fault status
+--@
+MODULE NFB(BI1, BI1_FAULT, BI1_CONNECTED, DefaultValue)
+DEFINE
+    BO1:= BI1_FAULT ? DefaultValue : BI1;
+    BO1_FAULT:= FALSE;
+
+--@ Memory with Set Priority
+--@
+--@ SAUNA / SAFIR2018
+--@
+--@ Author(s): Antti Pakonen
+--@ Version 14.4.2020
+--@
+--@
+--@ Source documents:
+--@ - [1] U.S. EPR FSAR - https:
+--@ - [2] https:
+MODULE MEM_S(BI1, BI1_FAULT, BI1_CONNECTED, BI2, BI2_FAULT, BI2_CONNECTED, SHOULD_EXEC)
+VAR
+    mem : boolean;
+    prevBI1 : boolean;
+    prevBI2 : boolean;
+    BO1_FAULT_memorized: boolean;
+DEFINE
+
+    BO1:=
+    case
+        !prevBI1 & BI1 : TRUE;
+        !prevBI2 & BI2 : FALSE;
+        TRUE : mem;
+    esac;
+    BO1_FAULT := BO1_FAULT_memorized;
+ASSIGN
+    init(BO1_FAULT_memorized) := BI1_FAULT | BI2_FAULT;
+    next(BO1_FAULT_memorized) := SHOULD_EXEC ? (BI1_FAULT | BI2_FAULT) : BO1_FAULT_memorized;
+    init(mem) := FALSE;
+    next(mem) := SHOULD_EXEC ? BO1 : mem;
+    init(prevBI1) := FALSE;
+    next(prevBI1) := SHOULD_EXEC ? BI1 : prevBI1;
+    init(prevBI2) := FALSE;
+    next(prevBI2) := SHOULD_EXEC ? BI2 : prevBI2;
+
+--@ AUX: Fault status masking (analog signal)
+--@
+--@ SAUNA / SAFIR2018
+--@
+--@ Author(s): Antti Pakonen
+--@ Version 14.4.2020
+--@
+--@ Auxiliary component: remove fault status
+--@
+MODULE NFA(IN0, IN0_FAULT, IN0_CONNECTED)
+DEFINE
+    OUT0:= IN0;
+    OUT0_FAULT:= FALSE;
+
+MODULE FAULT_BIN(IN1, IN1_FAULT, IN1_CONNECTED)
+VAR
+    OUT1_FAULT: boolean;
+    FAILURE: boolean;
+    SUBSTITUTE: boolean;
+DEFINE
+    BO1 := SUBSTITUTE;
+    BO1_FAULT := OUT1_FAULT;
+INIT !FAILURE -> OUT1_FAULT = IN1_FAULT & SUBSTITUTE = IN1
+TRANS !next(FAILURE) -> next(OUT1_FAULT) = next(IN1_FAULT) & next(SUBSTITUTE) = next(IN1)
+
+MODULE FAULT_ANA(IN1, IN1_FAULT, IN1_CONNECTED, SUBSTITUTE, SUBSTITUTE_FAULT, SUBSTITUTE_CONNECTED)
+VAR
+    OUT1_FAULT: boolean;
+    FAILURE: boolean;
+DEFINE
+    AO1 := SUBSTITUTE;
+    AO1_FAULT := OUT1_FAULT;
+INIT !FAILURE -> OUT1_FAULT = IN1_FAULT & SUBSTITUTE = IN1
+TRANS !next(FAILURE) -> next(OUT1_FAULT) = next(IN1_FAULT) & next(SUBSTITUTE) = next(IN1)
+
+--@ 2 out of 4 Function
+--@
+--@ SAUNA / SAFIR2018
+--@
+--@ Author(s): Antti Pakonen
+--@ Version 17.4.2018
+--@
+--@ - [1] U.S. EPR FSAR - https:
+--@ - [2] https:
+MODULE _24(BI1, BI1_FAULT, BI1_CONNECTED, BI2, BI2_FAULT, BI2_CONNECTED, BI3, BI3_FAULT, BI3_CONNECTED, BI4, BI4_FAULT, BI4_CONNECTED)
+DEFINE
+    --@ When a signal with a faulty status reaches the voting function block,
+    --@ the signal is disregarded through modification of the vote.
+    --@ This results in the output of the voting function block having a non-faulty status. [2]
+    valids := count((!BI1_FAULT & BI1_CONNECTED), (!BI2_FAULT & BI2_CONNECTED), (!BI3_FAULT & BI3_CONNECTED), (!BI4_FAULT & BI4_CONNECTED));
+    votes := count((!BI1_FAULT & BI1_CONNECTED & BI1), (!BI2_FAULT & BI2_CONNECTED & BI2), (!BI3_FAULT & BI3_CONNECTED & BI3), (!BI4_FAULT & BI4_CONNECTED & BI4));
+    BO1:=
+    case
+        valids > 2 : votes >= 2;
+        valids > 0 : votes >= 1;
+        TRUE : FALSE;
+    esac;
+    BO1_FAULT:= FALSE;
+
+--@ 3 out of 4 Function
+--@
+--@ SAUNA / SAFIR2018
+--@
+--@ Author(s): Antti Pakonen
+--@ Version 17.4.2018
+--@
+--@ Source documents:
+--@ - [1] U.S. EPR FSAR - https:
+--@ - [2] https:
+MODULE _34(BI1, BI1_FAULT, BI1_CONNECTED, BI2, BI2_FAULT, BI2_CONNECTED, BI3, BI3_FAULT, BI3_CONNECTED, BI4, BI4_FAULT, BI4_CONNECTED)
+DEFINE
+    --@ When a signal with a faulty status reaches the voting function block,
+    --@ the signal is disregarded through modification of the vote.
+    --@ This results in the output of the voting function block having a non-faulty status. [2]
+    valids := count((!BI1_FAULT & BI1_CONNECTED),(!BI2_FAULT & BI2_CONNECTED),(!BI3_FAULT & BI3_CONNECTED),(!BI4_FAULT & BI4_CONNECTED));
+    votes := count((!BI1_FAULT & BI1_CONNECTED & BI1),(!BI2_FAULT & BI2_CONNECTED & BI2),(!BI3_FAULT & BI3_CONNECTED & BI3),(!BI4_FAULT & BI4_CONNECTED & BI4));
+    BO1:=
+    case
+        valids = 4 : votes >= 3;
+        valids = 3 : votes = 3;
+        valids = 2 : votes = 2;
+        valids = 1 : votes = 1;
+        TRUE : FALSE;
+    esac;
+    BO1_FAULT:= FALSE;
+
+--@ On Time Delay
+--@
+--@ SAUNA / SAFIR2018
+--@
+--@ Author(s): Antti Pakonen
+--@ Version 14.4.2020
+--@
+--@
+--@ Source documents:
+--@ - [1] U.S. EPR FSAR - https:
+--@ - [2] https:
+MODULE ON_DELAY(BI1, BI1_FAULT, BI1_CONNECTED, time_, SHOULD_EXEC)
+VAR
+    timeLeft : 0..10; --@ Time left (in processor cycles) on the on delay
+    BO1_FAULT_memorized: boolean;
+DEFINE
+
+    BO1 :=
+    case
+        !BI1 : FALSE;
+        BI1 & (timeLeft = 0) : TRUE;
+        TRUE : FALSE;
+    esac;
+    BO1_FAULT := BO1_FAULT_memorized;
+ASSIGN
+    init(BO1_FAULT_memorized) := BI1_FAULT;
+    next(BO1_FAULT_memorized) := SHOULD_EXEC ? BI1_FAULT : BO1_FAULT_memorized;
+    init(timeLeft) := time_;
+    next(timeLeft) := SHOULD_EXEC ? (
+    case
+        BI1 & (timeLeft = 0) : 0;
+        BI1 & (timeLeft > 0) : timeLeft - 1;
+        TRUE : time_;
+    esac) : timeLeft;
+
+-- INVAR constraints of nuXmv force this constraint to be of a very specific form
+
+
+-- maximum and minimum cycle length of APUs/ALU (ms)
+
+
+-- maximum and minimum delay length (ms)
+-- cyclically executed APU (also contains fault masking of inputs)
+MODULE PS_APU_CYCLIC(
+    HLEG_P, HLEG_P_FAULT,
+    HLEG_T, HLEG_T_FAULT,
+    NF, NF_FAULT,
+    SHOULD_EXEC
+)
+VAR
+    apu: PS_APU(
+        HLEG_P_NF.OUT0, HLEG_P_NF.OUT0_FAULT, TRUE,
+        HLEG_T_NF.OUT0, HLEG_T_NF.OUT0_FAULT, TRUE,
+        NF_NF.OUT0, NF_NF.OUT0_FAULT, TRUE,
+        SHOULD_EXEC
+    );
+    HLEG_P_NF: NFA(HLEG_P, HLEG_P_FAULT, TRUE);
+    HLEG_T_NF: NFA(HLEG_T, HLEG_T_FAULT, TRUE);
+    NF_NF: NFA(NF, NF_FAULT, TRUE);
+VAR timer: clock;
+ASSIGN next(timer) := SHOULD_EXEC ? 0 : timer; -- any discrete transition resets the timer and causes a singe cycle of logic
+TRANS timer >= 50; -- exclude discrete events while waiting
+INVAR TRUE -> ((timer) >= (0) & (timer) <= (50));
+
+-- cyclically executed ALU (also contains fault masking of manual inputs)
+MODULE PS_ALU_CYCLIC(
+    HLEG_P_Max2_OR_NF_Max2_1, HLEG_P_Max2_OR_NF_Max2_1_FAULT,
+    HLEG_P_Max2_OR_NF_Max2_2, HLEG_P_Max2_OR_NF_Max2_2_FAULT,
+    HLEG_P_Max2_OR_NF_Max2_3, HLEG_P_Max2_OR_NF_Max2_3_FAULT,
+    HLEG_P_Max2_OR_NF_Max2_4, HLEG_P_Max2_OR_NF_Max2_4_FAULT,
+    HLEG_T_Min_AND_HLEG_P_Min_1, HLEG_T_Min_AND_HLEG_P_Min_1_FAULT,
+    HLEG_T_Min_AND_HLEG_P_Min_2, HLEG_T_Min_AND_HLEG_P_Min_2_FAULT,
+    HLEG_T_Min_AND_HLEG_P_Min_3, HLEG_T_Min_AND_HLEG_P_Min_3_FAULT,
+    HLEG_T_Min_AND_HLEG_P_Min_4, HLEG_T_Min_AND_HLEG_P_Min_4_FAULT,
+    MANUAL_RESET, MANUAL_RESET_FAULT,
+    SHOULD_EXEC
+)
+VAR
+    MANUAL_RESET_NF: NFA(MANUAL_RESET, MANUAL_RESET_FAULT, TRUE);
+    alu: PS_ALU(
+        HLEG_P_Max2_OR_NF_Max2_1, HLEG_P_Max2_OR_NF_Max2_1_FAULT, TRUE,
+        HLEG_P_Max2_OR_NF_Max2_2, HLEG_P_Max2_OR_NF_Max2_2_FAULT, TRUE,
+        HLEG_P_Max2_OR_NF_Max2_3, HLEG_P_Max2_OR_NF_Max2_3_FAULT, TRUE,
+        HLEG_P_Max2_OR_NF_Max2_4, HLEG_P_Max2_OR_NF_Max2_4_FAULT, TRUE,
+        HLEG_T_Min_AND_HLEG_P_Min_1, HLEG_T_Min_AND_HLEG_P_Min_1_FAULT, TRUE,
+        HLEG_T_Min_AND_HLEG_P_Min_2, HLEG_T_Min_AND_HLEG_P_Min_2_FAULT, TRUE,
+        HLEG_T_Min_AND_HLEG_P_Min_3, HLEG_T_Min_AND_HLEG_P_Min_3_FAULT, TRUE,
+        HLEG_T_Min_AND_HLEG_P_Min_4, HLEG_T_Min_AND_HLEG_P_Min_4_FAULT, TRUE,
+        MANUAL_RESET_NF.OUT0, MANUAL_RESET_NF.OUT0_FAULT, TRUE,
+        SHOULD_EXEC
+    );
+DEFINE
+    RODS_DOWN := alu.RODS_DOWN;
+    RODS_DOWN_FAULT := alu.RODS_DOWN_FAULT;
+    ENABLE_SAS := alu.ENABLE_SAS;
+    ENABLE_SAS_FAULT := alu.ENABLE_SAS_FAULT;
+VAR timer: clock;
+ASSIGN next(timer) := SHOULD_EXEC ? 0 : timer; -- any discrete transition resets the timer and causes a singe cycle of logic
+TRANS timer >= 50; -- exclude discrete events while waiting
+INVAR TRUE -> ((timer) >= (0) & (timer) <= (50));
+
+
+
+
+
+--@ Description:
+MODULE PS_APU_WITH_FAILURES(HLEG_P, HLEG_P_FAULT, HLEG_P_CONNECTED, HLEG_T, HLEG_T_FAULT, HLEG_T_CONNECTED, NEUTRON_FLUX, NEUTRON_FLUX_FAULT, NEUTRON_FLUX_CONNECTED, SHOULD_EXEC)
+VAR
+    subs1: {0,50,80};
+    subs1_FAULT: boolean;
+    subs2: {20,400};
+    subs2_FAULT: boolean;
+    subs3: {0,180000,250000};
+    subs3_FAULT: boolean;
+    FAILURE_HLEG_P: FAULT_ANA(HLEG_P, HLEG_P_FAULT, TRUE, subs1, subs1_FAULT, TRUE);
+    FAILURE_HLEG_T: FAULT_ANA(HLEG_T, HLEG_T_FAULT, TRUE, subs2, subs2_FAULT, TRUE);
+    FAILURE_NEUTRON_FLUX: FAULT_ANA(NEUTRON_FLUX, NEUTRON_FLUX_FAULT, TRUE, subs3, subs3_FAULT, TRUE);
+    content: PS_APU(FAILURE_HLEG_P.AO1, FAILURE_HLEG_P.AO1_FAULT, HLEG_P_CONNECTED, FAILURE_HLEG_T.AO1, FAILURE_HLEG_T.AO1_FAULT, HLEG_T_CONNECTED, FAILURE_NEUTRON_FLUX.AO1, FAILURE_NEUTRON_FLUX.AO1_FAULT, NEUTRON_FLUX_CONNECTED, SHOULD_EXEC);
+    FAILURE_HLEG_P_Max2_OR_NF_Max2: FAULT_BIN(content.HLEG_P_Max2_OR_NF_Max2, content.HLEG_P_Max2_OR_NF_Max2_FAULT, TRUE);
+    FAILURE_HLEG_T_Min_AND_HLEG_P_Min: FAULT_BIN(content.HLEG_T_Min_AND_HLEG_P_Min, content.HLEG_T_Min_AND_HLEG_P_Min_FAULT, TRUE);
+DEFINE
+    HLEG_P_Max2_OR_NF_Max2 := FAILURE_HLEG_P_Max2_OR_NF_Max2.BO1;
+    HLEG_P_Max2_OR_NF_Max2_FAULT := FAILURE_HLEG_P_Max2_OR_NF_Max2.BO1_FAULT;
+    HLEG_T_Min_AND_HLEG_P_Min := FAILURE_HLEG_T_Min_AND_HLEG_P_Min.BO1;
+    HLEG_T_Min_AND_HLEG_P_Min_FAULT := FAILURE_HLEG_T_Min_AND_HLEG_P_Min.BO1_FAULT;
+
+--@ Description:
+MODULE PS_ALU_WITH_FAILURES(HLEG_P_Max2_OR_NF_Max2_1, HLEG_P_Max2_OR_NF_Max2_1_FAULT, HLEG_P_Max2_OR_NF_Max2_1_CONNECTED, HLEG_P_Max2_OR_NF_Max2_2, HLEG_P_Max2_OR_NF_Max2_2_FAULT, HLEG_P_Max2_OR_NF_Max2_2_CONNECTED, HLEG_P_Max2_OR_NF_Max2_3, HLEG_P_Max2_OR_NF_Max2_3_FAULT, HLEG_P_Max2_OR_NF_Max2_3_CONNECTED, HLEG_P_Max2_OR_NF_Max2_4, HLEG_P_Max2_OR_NF_Max2_4_FAULT, HLEG_P_Max2_OR_NF_Max2_4_CONNECTED, HLEG_T_Min_AND_HLEG_P_Min_1, HLEG_T_Min_AND_HLEG_P_Min_1_FAULT, HLEG_T_Min_AND_HLEG_P_Min_1_CONNECTED, HLEG_T_Min_AND_HLEG_P_Min_2, HLEG_T_Min_AND_HLEG_P_Min_2_FAULT, HLEG_T_Min_AND_HLEG_P_Min_2_CONNECTED, HLEG_T_Min_AND_HLEG_P_Min_3, HLEG_T_Min_AND_HLEG_P_Min_3_FAULT, HLEG_T_Min_AND_HLEG_P_Min_3_CONNECTED, HLEG_T_Min_AND_HLEG_P_Min_4, HLEG_T_Min_AND_HLEG_P_Min_4_FAULT, HLEG_T_Min_AND_HLEG_P_Min_4_CONNECTED, MANUAL_RESET, MANUAL_RESET_FAULT, MANUAL_RESET_CONNECTED, SHOULD_EXEC)
+VAR
+    FAILURE_MANUAL_RESET: FAULT_BIN(MANUAL_RESET, MANUAL_RESET_FAULT, TRUE);
+    content: PS_ALU(HLEG_P_Max2_OR_NF_Max2_1, HLEG_P_Max2_OR_NF_Max2_1_FAULT, HLEG_P_Max2_OR_NF_Max2_1_CONNECTED, HLEG_P_Max2_OR_NF_Max2_2, HLEG_P_Max2_OR_NF_Max2_2_FAULT, HLEG_P_Max2_OR_NF_Max2_2_CONNECTED, HLEG_P_Max2_OR_NF_Max2_3, HLEG_P_Max2_OR_NF_Max2_3_FAULT, HLEG_P_Max2_OR_NF_Max2_3_CONNECTED, HLEG_P_Max2_OR_NF_Max2_4, HLEG_P_Max2_OR_NF_Max2_4_FAULT, HLEG_P_Max2_OR_NF_Max2_4_CONNECTED, HLEG_T_Min_AND_HLEG_P_Min_1, HLEG_T_Min_AND_HLEG_P_Min_1_FAULT, HLEG_T_Min_AND_HLEG_P_Min_1_CONNECTED, HLEG_T_Min_AND_HLEG_P_Min_2, HLEG_T_Min_AND_HLEG_P_Min_2_FAULT, HLEG_T_Min_AND_HLEG_P_Min_2_CONNECTED, HLEG_T_Min_AND_HLEG_P_Min_3, HLEG_T_Min_AND_HLEG_P_Min_3_FAULT, HLEG_T_Min_AND_HLEG_P_Min_3_CONNECTED, HLEG_T_Min_AND_HLEG_P_Min_4, HLEG_T_Min_AND_HLEG_P_Min_4_FAULT, HLEG_T_Min_AND_HLEG_P_Min_4_CONNECTED, FAILURE_MANUAL_RESET.BO1, FAILURE_MANUAL_RESET.BO1_FAULT, MANUAL_RESET_CONNECTED, SHOULD_EXEC);
+DEFINE
+    RODS_DOWN := content.RODS_DOWN;
+    RODS_DOWN_FAULT := content.RODS_DOWN_FAULT;
+    ENABLE_SAS := content.ENABLE_SAS;
+    ENABLE_SAS_FAULT := content.ENABLE_SAS_FAULT;
+
+
+
+
+
+-- cyclically executed APU (also contains fault masking of inputs)
+MODULE PS_APU_CYCLIC_WITH_FAILURES(
+    HLEG_P, HLEG_P_FAULT,
+    HLEG_T, HLEG_T_FAULT,
+    NF, NF_FAULT,
+    SHOULD_EXEC
+)
+VAR
+    apu: PS_APU_WITH_FAILURES(
+        HLEG_P_NF.OUT0, HLEG_P_NF.OUT0_FAULT, TRUE,
+        HLEG_T_NF.OUT0, HLEG_T_NF.OUT0_FAULT, TRUE,
+        NF_NF.OUT0, NF_NF.OUT0_FAULT, TRUE,
+        SHOULD_EXEC
+    );
+    HLEG_P_NF: NFA(HLEG_P, HLEG_P_FAULT, TRUE);
+    HLEG_T_NF: NFA(HLEG_T, HLEG_T_FAULT, TRUE);
+    NF_NF: NFA(NF, NF_FAULT, TRUE);
+VAR timer: clock;
+ASSIGN next(timer) := SHOULD_EXEC ? 0 : timer; -- any discrete transition resets the timer and causes a singe cycle of logic
+TRANS timer >= 50; -- exclude discrete events while waiting
+INVAR TRUE -> ((timer) >= (0) & (timer) <= (50));
+
+-- cyclically executed ALU (also contains fault masking of manual inputs)
+MODULE PS_ALU_CYCLIC_WITH_FAILURES(
+    HLEG_P_Max2_OR_NF_Max2_1, HLEG_P_Max2_OR_NF_Max2_1_FAULT,
+    HLEG_P_Max2_OR_NF_Max2_2, HLEG_P_Max2_OR_NF_Max2_2_FAULT,
+    HLEG_P_Max2_OR_NF_Max2_3, HLEG_P_Max2_OR_NF_Max2_3_FAULT,
+    HLEG_P_Max2_OR_NF_Max2_4, HLEG_P_Max2_OR_NF_Max2_4_FAULT,
+    HLEG_T_Min_AND_HLEG_P_Min_1, HLEG_T_Min_AND_HLEG_P_Min_1_FAULT,
+    HLEG_T_Min_AND_HLEG_P_Min_2, HLEG_T_Min_AND_HLEG_P_Min_2_FAULT,
+    HLEG_T_Min_AND_HLEG_P_Min_3, HLEG_T_Min_AND_HLEG_P_Min_3_FAULT,
+    HLEG_T_Min_AND_HLEG_P_Min_4, HLEG_T_Min_AND_HLEG_P_Min_4_FAULT,
+    MANUAL_RESET, MANUAL_RESET_FAULT,
+    SHOULD_EXEC
+)
+VAR
+    MANUAL_RESET_NF: NFA(MANUAL_RESET, MANUAL_RESET_FAULT, TRUE);
+    alu: PS_ALU_WITH_FAILURES(
+        HLEG_P_Max2_OR_NF_Max2_1, HLEG_P_Max2_OR_NF_Max2_1_FAULT, TRUE,
+        HLEG_P_Max2_OR_NF_Max2_2, HLEG_P_Max2_OR_NF_Max2_2_FAULT, TRUE,
+        HLEG_P_Max2_OR_NF_Max2_3, HLEG_P_Max2_OR_NF_Max2_3_FAULT, TRUE,
+        HLEG_P_Max2_OR_NF_Max2_4, HLEG_P_Max2_OR_NF_Max2_4_FAULT, TRUE,
+        HLEG_T_Min_AND_HLEG_P_Min_1, HLEG_T_Min_AND_HLEG_P_Min_1_FAULT, TRUE,
+        HLEG_T_Min_AND_HLEG_P_Min_2, HLEG_T_Min_AND_HLEG_P_Min_2_FAULT, TRUE,
+        HLEG_T_Min_AND_HLEG_P_Min_3, HLEG_T_Min_AND_HLEG_P_Min_3_FAULT, TRUE,
+        HLEG_T_Min_AND_HLEG_P_Min_4, HLEG_T_Min_AND_HLEG_P_Min_4_FAULT, TRUE,
+        MANUAL_RESET_NF.OUT0, MANUAL_RESET_NF.OUT0_FAULT, TRUE,
+        SHOULD_EXEC
+    );
+DEFINE
+    RODS_DOWN := alu.RODS_DOWN;
+    RODS_DOWN_FAULT := alu.RODS_DOWN_FAULT;
+    ENABLE_SAS := alu.ENABLE_SAS;
+    ENABLE_SAS_FAULT := alu.ENABLE_SAS_FAULT;
+VAR timer: clock;
+ASSIGN next(timer) := SHOULD_EXEC ? 0 : timer; -- any discrete transition resets the timer and causes a singe cycle of logic
+TRANS timer >= 50; -- exclude discrete events while waiting
+INVAR TRUE -> ((timer) >= (0) & (timer) <= (50));
+
+
+
+
+
+MODULE INT1_UNIT_OPTIONAL_DELAY(IN0, IN0_FAULT, SHOULD_EXEC)
+VAR
+    OUT0: {0,50,80};
+    OUT0_FAULT: boolean;
+ASSIGN
+    init(OUT0) := IN0;
+    init(OUT0_FAULT) := IN0_FAULT;
+    next(OUT0) := SHOULD_EXEC ? IN0 : OUT0;
+    next(OUT0_FAULT) := SHOULD_EXEC ? IN0_FAULT : OUT0_FAULT;
+
+MODULE INT2_UNIT_OPTIONAL_DELAY(IN0, IN0_FAULT, SHOULD_EXEC)
+VAR
+    OUT0: {20,400};
+    OUT0_FAULT: boolean;
+ASSIGN
+    init(OUT0) := IN0;
+    init(OUT0_FAULT) := IN0_FAULT;
+    next(OUT0) := SHOULD_EXEC ? IN0 : OUT0;
+    next(OUT0_FAULT) := SHOULD_EXEC ? IN0_FAULT : OUT0_FAULT;
+
+MODULE INT3_UNIT_OPTIONAL_DELAY(IN0, IN0_FAULT, SHOULD_EXEC)
+VAR
+    OUT0: {0,180000,250000};
+    OUT0_FAULT: boolean;
+ASSIGN
+    init(OUT0) := IN0;
+    init(OUT0_FAULT) := IN0_FAULT;
+    next(OUT0) := SHOULD_EXEC ? IN0 : OUT0;
+    next(OUT0_FAULT) := SHOULD_EXEC ? IN0_FAULT : OUT0_FAULT;
+
+MODULE BINARY_UNIT_OPTIONAL_DELAY(IN0, IN0_FAULT, SHOULD_EXEC)
+VAR
+    OUT0: boolean;
+    OUT0_FAULT: boolean;
+ASSIGN
+    init(OUT0) := IN0;
+    init(OUT0_FAULT) := IN0_FAULT;
+    next(OUT0) := SHOULD_EXEC ? IN0 : OUT0;
+    next(OUT0_FAULT) := SHOULD_EXEC ? IN0_FAULT : OUT0_FAULT;
+
+MODULE BEFORE_APU_INT1_DELAY(IN0, IN0_FAULT, SHOULD_EXEC)
+VAR
+    inside: INT1_UNIT_OPTIONAL_DELAY(IN0, IN0_FAULT, CAN_EXEC & SHOULD_EXEC);
+    timer: clock;
+DEFINE
+    OUT0 := inside.OUT0;
+    OUT0_FAULT := inside.OUT0_FAULT;
+    CAN_EXEC := timer >= 0;
+ASSIGN next(timer) := (CAN_EXEC & SHOULD_EXEC) ? 0 : timer;
+INVAR TRUE -> ((timer) >= (0) & (timer) <= (50));
+
+MODULE BEFORE_APU_INT2_DELAY(IN0, IN0_FAULT, SHOULD_EXEC)
+VAR
+    inside: INT2_UNIT_OPTIONAL_DELAY(IN0, IN0_FAULT, CAN_EXEC & SHOULD_EXEC);
+    timer: clock;
+DEFINE
+    OUT0 := inside.OUT0;
+    OUT0_FAULT := inside.OUT0_FAULT;
+    CAN_EXEC := timer >= 0;
+ASSIGN next(timer) := (CAN_EXEC & SHOULD_EXEC) ? 0 : timer;
+INVAR TRUE -> ((timer) >= (0) & (timer) <= (50));
+
+MODULE BEFORE_APU_INT3_DELAY(IN0, IN0_FAULT, SHOULD_EXEC)
+VAR
+    inside: INT3_UNIT_OPTIONAL_DELAY(IN0, IN0_FAULT, CAN_EXEC & SHOULD_EXEC);
+    timer: clock;
+DEFINE
+    OUT0 := inside.OUT0;
+    OUT0_FAULT := inside.OUT0_FAULT;
+    CAN_EXEC := timer >= 0;
+ASSIGN next(timer) := (CAN_EXEC & SHOULD_EXEC) ? 0 : timer;
+INVAR TRUE -> ((timer) >= (0) & (timer) <= (50));
+
+MODULE BEFORE_ALU_BINARY_DELAY(IN0, IN0_FAULT, SHOULD_EXEC)
+VAR
+    inside: BINARY_UNIT_OPTIONAL_DELAY(IN0, IN0_FAULT, CAN_EXEC & SHOULD_EXEC);
+    timer: clock;
+DEFINE
+    OUT0 := inside.OUT0;
+    OUT0_FAULT := inside.OUT0_FAULT;
+    CAN_EXEC := timer >= 0;
+ASSIGN next(timer) := (CAN_EXEC & SHOULD_EXEC) ? 0 : timer;
+INVAR TRUE -> ((timer) >= (0) & (timer) <= (50));
+
+-- delay between APUs and ALU (2 synchronized)
+MODULE BETWEEN_DELAY(IN0, IN0_FAULT, IN1, IN1_FAULT, SHOULD_EXEC)
+VAR
+    inside0: BINARY_UNIT_OPTIONAL_DELAY(IN0, IN0_FAULT, CAN_EXEC & SHOULD_EXEC);
+    inside1: BINARY_UNIT_OPTIONAL_DELAY(IN1, IN1_FAULT, CAN_EXEC & SHOULD_EXEC);
+    timer: clock;
+DEFINE
+    OUT0 := inside0.OUT0;
+    OUT0_FAULT := inside0.OUT0_FAULT;
+    OUT1 := inside1.OUT0;
+    OUT1_FAULT := inside1.OUT0_FAULT;
+    CAN_EXEC := timer >= 0;
+ASSIGN next(timer) := (CAN_EXEC & SHOULD_EXEC) ? 0 : timer;
+INVAR TRUE -> ((timer) >= (0) & (timer) <= (150));
+
+MODULE main
+VAR
+    --@ INPUTS / VARIABLES:
+    HLEG_P_DIV1: {0,50,80};
+    HLEG_P_DIV2: {0,50,80};
+    HLEG_P_DIV3: {0,50,80};
+    HLEG_P_DIV4: {0,50,80};
+    HLEG_T_DIV1: {20,400};
+    HLEG_T_DIV2: {20,400};
+    HLEG_T_DIV3: {20,400};
+    HLEG_T_DIV4: {20,400};
+    NF_DIV1: {0,180000,250000};
+    NF_DIV2: {0,180000,250000};
+    NF_DIV3: {0,180000,250000};
+    NF_DIV4: {0,180000,250000};
+    MAN_RESET_DIV1: boolean;
+
+    HLEG_P_DIV1_FAULT: boolean;
+    HLEG_P_DIV2_FAULT: boolean;
+    HLEG_P_DIV3_FAULT: boolean;
+    HLEG_P_DIV4_FAULT: boolean;
+    HLEG_T_DIV1_FAULT: boolean;
+    HLEG_T_DIV2_FAULT: boolean;
+    HLEG_T_DIV3_FAULT: boolean;
+    HLEG_T_DIV4_FAULT: boolean;
+    NF_DIV1_FAULT: boolean;
+    NF_DIV2_FAULT: boolean;
+    NF_DIV3_FAULT: boolean;
+    NF_DIV4_FAULT: boolean;
+    MAN_RESET_DIV1_FAULT: boolean;
+
+    -- execution mask
+    exec: array 0..21 of boolean;
+
+    -- delays
+    d_before_1_1: BEFORE_APU_INT1_DELAY(HLEG_P_DIV1, HLEG_P_DIV1_FAULT, exec[0]);
+    d_before_1_2: BEFORE_APU_INT2_DELAY(HLEG_T_DIV1, HLEG_T_DIV1_FAULT, exec[1]);
+    d_before_1_3: BEFORE_APU_INT3_DELAY(NF_DIV1, NF_DIV1_FAULT, exec[2]);
+    d_before_2_1: BEFORE_APU_INT1_DELAY(HLEG_P_DIV2, HLEG_P_DIV2_FAULT, exec[3]);
+    d_before_2_2: BEFORE_APU_INT2_DELAY(HLEG_T_DIV2, HLEG_T_DIV2_FAULT, exec[4]);
+    d_before_2_3: BEFORE_APU_INT3_DELAY(NF_DIV2, NF_DIV2_FAULT, exec[5]);
+    d_before_3_1: BEFORE_APU_INT1_DELAY(HLEG_P_DIV3, HLEG_P_DIV3_FAULT, exec[6]);
+    d_before_3_2: BEFORE_APU_INT2_DELAY(HLEG_T_DIV3, HLEG_T_DIV3_FAULT, exec[7]);
+    d_before_3_3: BEFORE_APU_INT3_DELAY(NF_DIV3, NF_DIV3_FAULT, exec[8]);
+    d_before_4_1: BEFORE_APU_INT1_DELAY(HLEG_P_DIV4, HLEG_P_DIV4_FAULT, exec[9]);
+    d_before_4_2: BEFORE_APU_INT2_DELAY(HLEG_T_DIV4, HLEG_T_DIV4_FAULT, exec[10]);
+    d_before_4_3: BEFORE_APU_INT3_DELAY(NF_DIV4, NF_DIV4_FAULT, exec[11]);
+    d_between_1: BETWEEN_DELAY(
+        PS_APU_DIV1.apu.HLEG_P_Max2_OR_NF_Max2, PS_APU_DIV1.apu.HLEG_P_Max2_OR_NF_Max2_FAULT,
+        PS_APU_DIV1.apu.HLEG_T_Min_AND_HLEG_P_Min, PS_APU_DIV1.apu.HLEG_T_Min_AND_HLEG_P_Min_FAULT,
+        exec[12]);
+    d_between_2: BETWEEN_DELAY(
+        PS_APU_DIV2.apu.HLEG_P_Max2_OR_NF_Max2, PS_APU_DIV2.apu.HLEG_P_Max2_OR_NF_Max2_FAULT,
+        PS_APU_DIV2.apu.HLEG_T_Min_AND_HLEG_P_Min, PS_APU_DIV2.apu.HLEG_T_Min_AND_HLEG_P_Min_FAULT,
+        exec[13]);
+    d_between_3: BETWEEN_DELAY(
+        PS_APU_DIV3.apu.HLEG_P_Max2_OR_NF_Max2, PS_APU_DIV3.apu.HLEG_P_Max2_OR_NF_Max2_FAULT,
+        PS_APU_DIV3.apu.HLEG_T_Min_AND_HLEG_P_Min, PS_APU_DIV3.apu.HLEG_T_Min_AND_HLEG_P_Min_FAULT,
+        exec[14]);
+    d_between_4: BETWEEN_DELAY(
+        PS_APU_DIV4.apu.HLEG_P_Max2_OR_NF_Max2, PS_APU_DIV4.apu.HLEG_P_Max2_OR_NF_Max2_FAULT,
+        PS_APU_DIV4.apu.HLEG_T_Min_AND_HLEG_P_Min, PS_APU_DIV4.apu.HLEG_T_Min_AND_HLEG_P_Min_FAULT,
+        exec[15]);
+    d_before_alu: BEFORE_ALU_BINARY_DELAY(MAN_RESET_DIV1, MAN_RESET_DIV1_FAULT, exec[16]);
+
+    -- APUs (without hardware faults)
+    PS_APU_DIV1: PS_APU_CYCLIC(
+        d_before_1_1.OUT0, d_before_1_1.OUT0_FAULT,
+        d_before_1_2.OUT0, d_before_1_2.OUT0_FAULT,
+        d_before_1_3.OUT0, d_before_1_3.OUT0_FAULT,
+        exec[17]
+    );
+    PS_APU_DIV2: PS_APU_CYCLIC_WITH_FAILURES(
+        d_before_2_1.OUT0, d_before_2_1.OUT0_FAULT,
+        d_before_2_2.OUT0, d_before_2_2.OUT0_FAULT,
+        d_before_2_3.OUT0, d_before_2_3.OUT0_FAULT,
+        exec[18]
+    );
+    PS_APU_DIV3: PS_APU_CYCLIC(
+        d_before_3_1.OUT0, d_before_3_1.OUT0_FAULT,
+        d_before_3_2.OUT0, d_before_3_2.OUT0_FAULT,
+        d_before_3_3.OUT0, d_before_3_3.OUT0_FAULT,
+        exec[19]
+    );
+    PS_APU_DIV4: PS_APU_CYCLIC(
+        d_before_4_1.OUT0, d_before_4_1.OUT0_FAULT,
+        d_before_4_2.OUT0, d_before_4_2.OUT0_FAULT,
+        d_before_4_3.OUT0, d_before_4_3.OUT0_FAULT,
+        exec[20]
+    );
+
+    -- 1 ALU
+    PS_ALU_DIV1: PS_ALU_CYCLIC(
+        d_between_1.OUT0, d_between_1.OUT0_FAULT,
+        d_between_2.OUT0, d_between_2.OUT0_FAULT,
+        d_between_3.OUT0, d_between_3.OUT0_FAULT,
+        d_between_4.OUT0, d_between_4.OUT0_FAULT,
+        d_between_1.OUT1, d_between_1.OUT1_FAULT,
+        d_between_2.OUT1, d_between_2.OUT1_FAULT,
+        d_between_3.OUT1, d_between_3.OUT1_FAULT,
+        d_between_4.OUT1, d_between_4.OUT1_FAULT,
+        d_before_alu.OUT0, d_before_alu.OUT0_FAULT,
+        exec[21]
+    );
+
+-- execution permissions: execute at least one process at each discrete step
+INIT ANY_EXEC;
+TRANS next(ANY_EXEC);
+DEFINE
+    ANY_EXEC := exec[0] | exec[1] | exec[2] | exec[3] | exec[4]
+              | exec[5] | exec[6] | exec[7] | exec[8] | exec[9]
+              | exec[10] | exec[11] | exec[12] | exec[13] | exec[14]
+              | exec[15] | exec[16] | exec[17] | exec[18] | exec[19]
+              | exec[20] | exec[21];
+    ENABLE_SAS_DIV1 := PS_ALU_DIV1.ENABLE_SAS;
+    ENABLE_SAS_DIV1_FAULT := PS_ALU_DIV1.ENABLE_SAS_FAULT;
+    RODS_DOWN_DIV1 := PS_ALU_DIV1.RODS_DOWN;
+    RODS_DOWN_DIV1_FAULT := PS_ALU_DIV1.RODS_DOWN_FAULT;
+
+--===============================================================================--
+-- SPECIFICATIONS: PRELIMINARY DEFINITIONS
+--===============================================================================--
+    
+-- boolean count() the given macro over all divisions
+#define COUNT(X) count(X(1), X(2), X(3), X(4))
+
+-- temporal count(...) >= n, where ... is the given macro
+#define COUNT_GE4(X) (X(1) & X(2) & X(3) & X(4))
+#define COUNT_GE3(X) (X(2) & X(3) & X(4) | X(1) & X(3) & X(4) | X(1) & X(2) & X(4) | X(1) & X(2) & X(3))
+#define COUNT_GE2(X) (X(1) & X(2) | X(1) & X(3) | X(1) & X(4) | X(2) & X(3) | X(2) & X(4) | X(3) & X(4))
+#define COUNT_GE1(X) (X(1) | X(2) | X(3) | X(4))
+
+-- temporal count(...) <= n, where ... is the given macro
+#define COUNT_LE3(X) (!COUNT_GE4(X))
+#define COUNT_LE2(X) (!COUNT_GE3(X))
+#define COUNT_LE1(X) (!COUNT_GE2(X))
+#define COUNT_LE0(X) (!COUNT_GE1(X))
+
+#define HLEG_P_HIGH(div) (HLEG_P_DIV##div > 70)
+#define HLEG_P_LOW(div) (HLEG_P_DIV##div < 20)
+#define NF_HIGH(div) (NF_DIV##div > 200000)
+#define HLEG_T_LOW(div) (HLEG_T_DIV##div < 150)
+
+#define G_HLEG_P_HIGH(div) G(HLEG_P_HIGH(div))
+#define G_NF_HIGH(div) G(NF_HIGH(div))
+#define G_HLEG_T_LOW(div) G(HLEG_T_LOW(div))
+#define F_HLEG_P_LOW(div) F(HLEG_P_LOW(div))
+
+--===============================================================================--
+-- NON-TIMED SPECIFICATIONS
+--===============================================================================--
+
+--# Req 1.1
+--# The reactor is tripped if the hot leg pressure rises above 70 bar (2 out of 4), or the neutron flux rises above 200 000 /s.
+
+#define R_1_1_P(u) (G !MAN_RESET_DIV1) -> G(COUNT_GE##u(G_HLEG_P_HIGH) -> F RODS_DOWN_DIV1)
+--LTLSPEC R_1_1_P(4)
+--LTLSPEC R_1_1_P(3)
+--LTLSPEC R_1_1_P(2)
+LTLSPEC R_1_1_P(1)
+
+--LTLSPEC (G !MAN_RESET_DIV1) -> G(COUNT_GE4(G_NF_HIGH) -> F RODS_DOWN_DIV1)
+
+#define R_1_1_NF(u, v) (G !MAN_RESET_DIV1) & COUNT_LE##v(F_HLEG_P_LOW) -> G(COUNT_GE##u(G_NF_HIGH) -> F RODS_DOWN_DIV1)
+--LTLSPEC R_1_1_NF(4, 0)
+--LTLSPEC R_1_1_NF(4, 1)
+--LTLSPEC R_1_1_NF(4, 2)
+--LTLSPEC R_1_1_NF(4, 3)
+--LTLSPEC R_1_1_NF(3, 2)
+--LTLSPEC R_1_1_NF(2, 2)
+--LTLSPEC R_1_1_NF(1, 2)
+
+--===============================================================================--
+
+--# Actuation of the reactor trip is inhibited during startup
+--# (hot leg temperature is below 150 C and hot leg pressure is below 20 bar in three out of four circuits).
+
+#define R2_1_COND_INSIDE(div) G(HLEG_T_LOW(div) & HLEG_P_LOW(div))
+#define R2_1_COND(u) (COUNT_GE##u(R2_1_COND_INSIDE))
+
+--LTLSPEC G((G R2_1_COND(4)) -> F !RODS_DOWN_DIV1)
+--LTLSPEC G F(R2_1_COND(4) -> F !RODS_DOWN_DIV1)
+
+--===============================================================================--
+
+--# When PS actuates the reactor trip, the enabling signal to SAS is reset (i.e., SAS is prevented from raising the control rods).
+--LTLSPEC G(RODS_DOWN_DIV1 -> !ENABLE_SAS_DIV1)
+
+--===============================================================================--
+
+--# No spurious actuation
+
+#define R5_1_V1(u) G(RODS_DOWN_DIV1 -> O(COUNT_GE##u(HLEG_P_HIGH) | COUNT_GE##u(NF_HIGH)))
+--LTLSPEC R5_1_V1(1)
+--LTLSPEC R5_1_V1(2)
+
+-- let`s first take OR and then count
+#define R5_1_CRITERION(div) (HLEG_P_HIGH(div) | NF_HIGH(div))
+#define R5_1_V2(u) G(RODS_DOWN_DIV1 -> O(COUNT_GE##u(R5_1_CRITERION)))
+--LTLSPEC R5_1_V2(1)
+--LTLSPEC R5_1_V2(2)
+--LTLSPEC R5_1_V2(3)
+
+--===============================================================================--
+-- TIMED SPECIFICATIONS
+--===============================================================================--
+
+#define TIMED_IMPLIES(a, b, X, Y) G((G[0, a] (X)) -> F[0, b] (Y))
+#define T100_G_HLEG_P_HIGH(div) (G[0, 100] HLEG_P_HIGH(div))
+#define T150_G_HLEG_P_HIGH(div) (G[0, 150] HLEG_P_HIGH(div))
+
+#define TIMED_R_1_1_P(u) (G !MAN_RESET_DIV1) -> G(COUNT_GE##u(T150_G_HLEG_P_HIGH) -> F[0, 300] RODS_DOWN_DIV1)
+--LTLSPEC TIMED_R_1_1_P(4)
+--LTLSPEC TIMED_R_1_1_P(3)
+--LTLSPEC TIMED_R_1_1_P(2)
+--LTLSPEC TIMED_R_1_1_P(1)
+
+#define TIMED_R_1_1_P_100(u) (G !MAN_RESET_DIV1) -> G(COUNT_GE##u(T100_G_HLEG_P_HIGH) -> F[0, 300] RODS_DOWN_DIV1)
+--LTLSPEC TIMED_R_1_1_P_100(4)
+--LTLSPEC TIMED_R_1_1_P_100(3)
+--LTLSPEC TIMED_R_1_1_P_100(2)
+
+--LTLSPEC (G !MAN_RESET_DIV1) -> TIMED_IMPLIES(150, 300, COUNT_GE4(NF_HIGH), RODS_DOWN_DIV1)
+
+#define T100_G_NF_HIGH(div) (G[0, 100] NF_HIGH(div))
+#define T150_G_NF_HIGH(div) (G[0, 150] NF_HIGH(div))
+
+#define TIMED_R_1_1_NF(u, v) (G !MAN_RESET_DIV1) & COUNT_LE##v(F_HLEG_P_LOW) -> G(COUNT_GE##u(T150_G_NF_HIGH) -> F[0, 300] RODS_DOWN_DIV1)
+--LTLSPEC TIMED_R_1_1_NF(4, 0)
+--LTLSPEC TIMED_R_1_1_NF(4, 1)
+--LTLSPEC TIMED_R_1_1_NF(4, 2)
+--LTLSPEC TIMED_R_1_1_NF(4, 3)
+--LTLSPEC TIMED_R_1_1_NF(3, 2)
+--LTLSPEC TIMED_R_1_1_NF(2, 2)
+--LTLSPEC TIMED_R_1_1_NF(1, 2)
+
+#define TIMED_R_1_1_NF_100(u, v) (G !MAN_RESET_DIV1) & COUNT_LE##v(F_HLEG_P_LOW) -> G(COUNT_GE##u(T100_G_NF_HIGH) -> F[0, 300] RODS_DOWN_DIV1)
+--LTLSPEC TIMED_R_1_1_NF_100(4, 0)
+--LTLSPEC TIMED_R_1_1_NF_100(4, 1)
+--LTLSPEC TIMED_R_1_1_NF_100(4, 2)
+--LTLSPEC TIMED_R_1_1_NF_100(3, 2)
+--LTLSPEC TIMED_R_1_1_NF_100(2, 2)
+
+--LTLSPEC G((G[0, 150] R2_1_COND(4)) -> F[0, 300] !RODS_DOWN_DIV1)
+
+#define TIMED_R5_1_V1(u, a) G(RODS_DOWN_DIV1 & O[0, 50](!RODS_DOWN_DIV1) -> O[0, a](COUNT_GE##u(HLEG_P_HIGH) | COUNT_GE##u(NF_HIGH)))
+--LTLSPEC TIMED_R5_1_V1(1, 300)
+--LTLSPEC TIMED_R5_1_V1(2, 300)
+
+--LTLSPEC TIMED_R5_1_V1(1, 150)
+
+#define TIMED_R5_1_V2(u, a) G(RODS_DOWN_DIV1 & O[0, 50](!RODS_DOWN_DIV1) -> O[0, a](COUNT_GE##u(R5_1_CRITERION)))
+--LTLSPEC TIMED_R5_1_V2(1, 300)
+--LTLSPEC TIMED_R5_1_V2(2, 300)
+--LTLSPEC TIMED_R5_1_V2(3, 300)
+
+--LTLSPEC TIMED_R5_1_V2(1, 150)
