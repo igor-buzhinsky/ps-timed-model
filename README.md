@@ -1,6 +1,6 @@
 ## Timed formal model of a reactor protection system
 
-Details regarding the reactor protection (PS) system can be found in [Buzhinsky I., Pakonen A. Model-checking detailed fault-tolerant nuclear power plant safety functions. IEEE Access, vol. 7, 2019, pp. 162139–162156. DOI: 10.1109/ACCESS.2019.2951938](https://ieeexplore.ieee.org/document/8892461/).
+Details regarding the reactor protection system (PS) can be found in [Buzhinsky I., Pakonen A. Model-checking detailed fault-tolerant nuclear power plant safety functions. IEEE Access, vol. 7, 2019, pp. 162139–162156. DOI: 10.1109/ACCESS.2019.2951938](https://ieeexplore.ieee.org/document/8892461/).
 
 In the model available from this repository, the communication within this system is modeled in the nuXmv model checker, with timed automata. You need to have [nuXmv 2.0.0](https://nuxmv.fbk.eu/) installed.
 Note that failure/validity signal processing has been simplified compared to the versions reported in the article above and the submitted manuscript, so that we could publish this model.
