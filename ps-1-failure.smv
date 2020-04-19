@@ -35,7 +35,6 @@ DEFINE
 --@
 --@ SEARCH / SAFIR2022
 --@
---@ Author(s): Antti Pakonen
 --@ Version 16.5.2019
 --@
 --@
@@ -51,7 +50,6 @@ DEFINE
 --@
 --@ SAUNA / SAFIR2018
 --@
---@ Author(s): Antti Pakonen
 --@ Version 17.4.2018
 --@
 --@ Source documents:
@@ -76,7 +74,6 @@ ASSIGN
 --@
 --@ SAUNA / SAFIR2018
 --@
---@ Author(s): Antti Pakonen
 --@ Version 17.4.2018
 --@
 --@ Source documents:
@@ -95,7 +92,6 @@ DEFINE
 --@
 --@ SAUNA / SAFIR2018
 --@
---@ Author(s): Antti Pakonen
 --@ Version 17.4.2018
 --@
 --@ Source documents:
@@ -110,7 +106,6 @@ DEFINE
 --@
 --@ SAUNA / SAFIR2018
 --@
---@ Author(s): Antti Pakonen
 --@ Version 17.4.2018
 --@
 --@ Source documents:
@@ -125,7 +120,6 @@ DEFINE
 --@
 --@ SAUNA / SAFIR2018
 --@
---@ Author(s): Antti Pakonen
 --@ Version 14.4.2020
 --@
 --@ Auxiliary component: remove fault status
@@ -139,7 +133,6 @@ DEFINE
 --@
 --@ SAUNA / SAFIR2018
 --@
---@ Author(s): Antti Pakonen
 --@ Version 14.4.2020
 --@
 --@
@@ -175,7 +168,6 @@ ASSIGN
 --@
 --@ SAUNA / SAFIR2018
 --@
---@ Author(s): Antti Pakonen
 --@ Version 14.4.2020
 --@
 --@ Auxiliary component: remove fault status
@@ -210,7 +202,6 @@ TRANS !next(FAILURE) -> next(OUT1_FAULT) = next(IN1_FAULT) & next(SUBSTITUTE) = 
 --@
 --@ SAUNA / SAFIR2018
 --@
---@ Author(s): Antti Pakonen
 --@ Version 17.4.2018
 --@
 --@ - [1] U.S. EPR FSAR - https:
@@ -234,7 +225,6 @@ DEFINE
 --@
 --@ SAUNA / SAFIR2018
 --@
---@ Author(s): Antti Pakonen
 --@ Version 17.4.2018
 --@
 --@ Source documents:
@@ -261,7 +251,6 @@ DEFINE
 --@
 --@ SAUNA / SAFIR2018
 --@
---@ Author(s): Antti Pakonen
 --@ Version 14.4.2020
 --@
 --@
